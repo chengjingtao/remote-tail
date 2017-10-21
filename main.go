@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"github.com/BurntSushi/toml"
+	"github.com/mylxsw/remote-tail/alauda"
 	"github.com/mylxsw/remote-tail/command"
 	"github.com/mylxsw/remote-tail/console"
 )
@@ -82,6 +83,18 @@ func parseConfig(filePath string, hostStr string, configFile string, slient bool
 	return
 }
 
+func init() {
+	command.ServersPlugins[alauda.ServersPluginName] = &alauda.ServersPlugin{}
+}
+
+func loadServers(config command.Config) map[string]command.Server {
+	if config.ServersPlugin.Name == "" {
+		return config.Servers
+	}
+	config.ServersPlugin.Init()
+	return config.ServersPlugin.LoadServers()
+}
+
 func main() {
 
 	flag.Usage = func() {
@@ -100,11 +113,13 @@ func main() {
 	if !config.Slient {
 		printWelcomeMessage(config)
 	}
+	config.Servers = loadServers(config)
 
 	outputs := make(chan command.Message, 255)
 	var wg sync.WaitGroup
 
-	for _, server := range config.Servers {
+	for key, server := range config.Servers {
+		fmt.Println(key)
 		wg.Add(1)
 		go func(server command.Server) {
 			defer func() {
@@ -122,6 +137,10 @@ func main() {
 			// If the service configuration does not have a port, the default value of 22 is used
 			if server.Port == 0 {
 				server.Port = 22
+			}
+
+			if server.Script == "" {
+				server.Script = "tail -f"
 			}
 
 			cmd := command.NewCommand(server)

@@ -32,7 +32,7 @@ func NewCommand(server Server) (cmd *Command) {
 	cmd = &Command{
 		Host:   server.Hostname,
 		User:   server.User,
-		Script: fmt.Sprintf("tail -f %s", server.TailFile),
+		Script: server.Script + " " + server.TailFile,
 		Server: server,
 	}
 

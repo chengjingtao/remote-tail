@@ -2,3 +2,4 @@
 .vscode
 bin/remote-tail*
 yunsom.toml
+bin
