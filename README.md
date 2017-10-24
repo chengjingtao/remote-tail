@@ -6,6 +6,22 @@ RemoteTail只适应于简单的日志收集聚合，如果你不介意重启服�
 
 ![logo](https://oayrssjpa.qnssl.com/remote-tail.jpg?20161011)
 
+## alauda plugin
+```
+[servers_plugin]
+name="alauda"
+
+[servers_plugin.meta_data]
+api_server="https://api.alauda.cn"
+token="Token xxx"
+namespace="alaudaorg"
+exec_server="xxxxx:4022"
+service="int-azure-alauda/alauda-xxx"
+user="xxx"
+password="xxx"
+```
+`./remote-tail-mac -conf conf.toml -alaudaService int-azure-alauda/alauda-enigma -file /var/log/mathilde/enigma.log`
+
 ## 使用场景
 
 假设公司有两台web服务器A和B，由于初期没有专业运维进行配置集中式的日志服务系统，两台服务器上分别部署了两套相同的代码提供web服务，使用nginx作为负载均衡，请求根据设定的策略转发的这两台web服务器上。

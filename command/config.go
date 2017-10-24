@@ -28,7 +28,10 @@ type ServersPluginAction interface {
 	LoadServers(metaData map[string]interface{}) map[string]Server
 }
 
-func (sp *ServersPlugin) Init() {
+func (sp *ServersPlugin) Init(metaData map[string]interface{}) {
+	for k, v := range metaData {
+		sp.MetaData[k] = v
+	}
 	action := ServersPlugins[sp.Name]
 	sp.action = action
 }

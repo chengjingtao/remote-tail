@@ -23,6 +23,7 @@ var filePath = flag.String("file", "", "-file=\"/home/data/logs/**/*.log\"")
 var hostStr = flag.String("hosts", "", "-hosts=root@192.168.1.225,root@192.168.1.226")
 var configFile = flag.String("conf", "", "-conf=example.toml")
 var slient = flag.Bool("slient", false, "-slient=false")
+var alaudaServiceName = flag.String("alaudaService", "", "-alaudaService=int-azure-alauda/alauda-jakiro")
 
 func usageAndExit(message string) {
 
@@ -55,6 +56,9 @@ func parseConfig(filePath string, hostStr string, configFile string, slient bool
 	if configFile != "" {
 		if _, err := toml.DecodeFile(configFile, &config); err != nil {
 			log.Fatal(err)
+		}
+		if filePath != "" {
+			config.TailFile = filePath
 		}
 
 	} else {
@@ -91,7 +95,12 @@ func loadServers(config command.Config) map[string]command.Server {
 	if config.ServersPlugin.Name == "" {
 		return config.Servers
 	}
-	config.ServersPlugin.Init()
+	metaData := make(map[string]interface{})
+	if fmt.Sprintf(*alaudaServiceName) != "" {
+		metaData["service"] = *alaudaServiceName
+	}
+
+	config.ServersPlugin.Init(metaData)
 	return config.ServersPlugin.LoadServers()
 }
 
